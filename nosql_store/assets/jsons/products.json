@@ -1,0 +1,7 @@
+{
+  "products": [
+    {"name":"Almonds","quantity":300.0,"rate":499.0},
+    {"name":"Cashew nuts","quantity":455.0,"rate":988.0},
+    {"name":"Makhana","quantity":500.0,"rate":599.0}
+  ]
+}
