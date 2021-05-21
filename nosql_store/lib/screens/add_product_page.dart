@@ -9,7 +9,9 @@ import 'package:nosql_store/viewmodels/products/product_view_model.dart';
 
 class AddProductPage extends StatefulWidget {
   VoidCallback onPressed;
-  AddProductPage({this.onPressed});
+  bool isEdit;
+  Product editProduct;
+  AddProductPage({this.onPressed, this.isEdit = false, this.editProduct});
   @override
   _AddProductPageState createState() => _AddProductPageState();
 }
@@ -31,11 +33,23 @@ class _AddProductPageState extends State<AddProductPage> {
 
   final viewModel = ProductViewModel();
 
+  read() async {
+    final ff = await viewModel.getAllSortedByName();
+    debugPrint('json: ${jsonEncode(ProductList(products: ff))}');
+    setState(() {
+      pNameController.text = widget.editProduct.name;
+      quantityController.text = '${widget.editProduct.quantity}';
+      rateController.text = '${widget.editProduct.rate}';
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState(
-
     super.initState();
+    if (widget.isEdit) {
+      read();
+    }
   }
 
   @override
@@ -125,9 +139,21 @@ class _AddProductPageState extends State<AddProductPage> {
                       final form = formKey.currentState;
                       form.save();
                       if (form.validate()) {
-                        viewModel
-                            .insert(_addProduct())
-                            .whenComplete(() => widget.onPressed());
+                        if (widget.isEdit) {
+                          widget.editProduct.name = pNameController.text;
+                          widget.editProduct.quantity =
+                              double.parse(quantityController.text);
+                          widget.editProduct.rate =
+                              double.parse(rateController.text);
+                          //update value in database.
+                          viewModel
+                              .update(widget.editProduct)
+                              .whenComplete(() => widget.onPressed());
+                        } else {
+                          viewModel
+                              .insert(_addProduct())
+                              .whenComplete(() => widget.onPressed());
+                        }
                       }
                     },
                     style: TextButton.styleFrom(
