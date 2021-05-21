@@ -6,6 +6,7 @@ import 'package:nosql_store/utilities/styles.dart';
 import 'package:nosql_store/screens/add_product_page.dart';
 import 'package:nosql_store/viewmodels/products/product_view_model.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:nosql_store/main.dart';
 
 class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
@@ -49,6 +50,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print('print string'.capitalize());
     return Scaffold(
       appBar: AppBar(
         title: Text('NoSql Store Demo'),
@@ -93,8 +95,14 @@ class _HomePageState extends State<HomePage> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         IconButton(
+          icon: Icon(Icons.edit_outlined),
+          onPressed: () {
+            editProductWidget(product);
+          },
+        ),
+        IconButton(
           icon: Icon(Icons.delete_outline),
-          onPressed: () async {
+          onPressed: () {
             setState(() {
               viewModel.delete(product).whenComplete(() => read());
             });
@@ -114,6 +122,23 @@ class _HomePageState extends State<HomePage> {
             Navigator.of(context).pop();
             read();
           });
+        });
+  }
+
+  editProductWidget(Product product) {
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return AddProductPage(
+            onPressed: () {
+              Navigator.of(context).pop();
+              read();
+            },
+            isEdit: true,
+            editProduct: product,
+          );
         });
   }
 }
